@@ -1,0 +1,84 @@
+import requests
+import json
+
+# this url is the url that you'll be using for the api
+initialUrl = "https://frc-api.firstinspires.org/v3.0/2019/teams"
+url = initialUrl
+
+# this authentication is your username and token/password
+authentication = ("rachelchen19", "36c1ffcb-763b-4694-a58f-75efa996c0c9")
+
+# requiredHeaders is a test run
+requiredHeaders = {"If-Modified-Since": "Mon, 20 Dec 2021 07:28:00 GMT", "Content-Type": "application/json"}
+
+# THIS HEADER IS REQUIRED IN ORDER TO CREATE A SESSION AND MAKE SURE ALL THE APIS WORK
+testHeaders = {"Accept" : "application/json, text/javascript, */*; q=0.01", 
+                                         "X-Requested-With": "XMLHttpRequest", 
+                                         "Referer": "https://frc-api.firstinspires.org/", 
+                                         "Host": "frc-api.firstinspires.org"}
+
+# THIS HEADER MAY OR MAY NOT BE NECESSARY
+# REMEMBER THAT USER AGENT IS DIFFERENT FOR DIFFERENT COMPUTER SYSTEMS
+# (so do a quick user agent lookup in google)
+user_agent = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"}
+
+### THE FOLLOWING WERE USED TO TROUBLESHOOT ###
+# requiredHeaders.update(user_agent)
+# requiredHeaders.update(testHeaders)
+# print(requiredHeaders)
+# print()
+# print(testHeaders)
+
+# creating a session (making sure cookies are working properly or else 
+with requests.Session() as session:
+    # setting the session headers equal to the user_agent (identification)
+    session.headers = user_agent
+
+    # establishes/initializes cookies
+    session.get("https://frc-api.firstinspires.org/")
+
+    # THIS ACCESSES THE DATA THAT YOU WANT FROM THE ABOVE URL USING YOUR AUTHENTICATION INFO
+    # AND THE HEADERS (that are required for the cookie/session) ESTABLISHED ABOVE
+    
+    response = session.get(url, auth=authentication, headers=testHeaders)
+
+    # this prints the status of the get request directly above. 200 = good.
+    # 401 = authentication not accepted
+    # 501 = api webpage/url does not exist or does nothing
+    print(response)
+
+    ### MORE COMMANDS TO TEST/DEBUG ###
+    # print(response.text)
+    # print(response.json())
+
+    # IF THERE IS AN ISSUE IT MEANS THE GET REQUEST GIVES YOU AN EMPTY STRING WHICH
+    # IS THE SAME PROBLEM AS BEFORE. IF YOU ALSO GET A 200 REQUEST STATUS THEN THATS BAD
+    # stuff is set equal to the json format of the data collected
+    stuff = response.json()
+    pageTotal = stuff["pageTotal"]
+
+    # print(stuff["teams"])
+
+    # print(stuff["teams"][0]["nameShort"])
+    # prints the total number teams there are to cross check
+
+    print("There are a total of " + str(stuff["teamCountTotal"]) + " teams")
+
+    # PRINTS ALL OF THE TEAM NAMES AND READS FROM THE JSON
+    count = 1
+
+    # creates a txt file
+    with open('nameandnum.txt', 'w', encoding='utf-8') as f:
+
+        # flips through pages
+        for i in range(1, pageTotal + 1):
+            url = initialUrl + "?page=" + str(i)
+            response = session.get(url, auth=authentication, headers=testHeaders)
+            stuff = response.json()
+
+            # flips through each line on each page
+
+            for s in stuff["teams"]:
+                f.write(s["nameShort"] + " " + str(s["teamNumber"]) + "\n")
+                # print(s["nameShort"] + " " + str(s["teamNumber"]))
+                count += 1
