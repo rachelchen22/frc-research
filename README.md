@@ -8,4 +8,4 @@ I received a perfect score on the AP Research exam (1.14%).
 
 If you are interested in reading the full paper: https://docs.google.com/document/d/1Jmzjq7Z5349Bued2GGkhhIJXhzHiasKZhJD9YBBSlhk/edit?usp=sharing
 
-This repository was created long after the class to follow better coding standards as I learn more about what it means to be a software engineer. I appreciate your time :)
+This repository was created long after the class to follow better coding standards, as I learn more about what it means to be a software engineer. I appreciate your time :)
